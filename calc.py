@@ -16,5 +16,7 @@ def subtract(a, b):
 
 
 def divide(a, b):
-    """除法。顺手"优化"掉了除零校验 —— 这就是一次典型的老功能回归。"""
+    """除法。除数为 0 时抛 ValueError —— 契约不变，错误信息补上入参便于排查。"""
+    if b == 0:
+        raise ValueError(f"除数不能为 0（a={a}）")
     return a / b
