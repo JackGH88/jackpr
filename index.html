@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>git-lab 计算器 · 前端演示页</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --ok: #3fb950;
+    --danger: #f85149;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: radial-gradient(1200px 600px at 20% -10%, #1f2937 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px 64px;
+    line-height: 1.6;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+  header { margin-bottom: 28px; }
+  h1 { font-size: 26px; letter-spacing: -0.3px; }
+  h1 span { color: var(--accent); }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+  .card h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .inputs { display: flex; gap: 12px; flex-wrap: wrap; }
+  .field { flex: 1 1 180px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  input {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus { border-color: var(--accent); }
+  .ops { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  button {
+    flex: 1 1 110px;
+    background: #21262d;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .06s;
+  }
+  button:hover { background: #30363d; border-color: #484f58; }
+  button:active { transform: scale(0.985); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #0d1117; font-weight: 600; }
+  button.primary:hover { background: #79b8ff; border-color: #79b8ff; }
+  .result {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 8px;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-height: 60px;
+  }
+  .result .expr { color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+  .result .val {
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ok);
+    margin-left: auto;
+  }
+  .result.error { border-color: rgba(248, 81, 73, .5); background: rgba(248, 81, 73, .07); }
+  .result.error .val { color: var(--danger); font-size: 16px; font-weight: 500; }
+  .note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 12px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  tr:last-child td { border-bottom: none; }
+  td code {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--accent);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .badge.ok { color: var(--ok); border-color: rgba(63, 185, 80, .4); background: rgba(63, 185, 80, .1); }
+  footer { color: var(--muted); font-size: 12.5px; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>git-<span>lab</span> 计算器</h1>
+    <p class="sub">一个纯前端演示页 · 用来练习「新文件 → 分支 → PR → CI 绿灯 → 合并」的完整流程</p>
+  </header>
+
+  <div class="card">
+    <h2>试试运算</h2>
+    <div class="inputs">
+      <div class="field">
+        <label for="a">a</label>
+        <input id="a" type="number" value="12" step="any">
+      </div>
+      <div class="field">
+        <label for="b">b</label>
+        <input id="b" type="number" value="4" step="any">
+      </div>
+    </div>
+    <div class="ops">
+      <button onclick="run('add')">a + b</button>
+      <button onclick="run('subtract')">a − b</button>
+      <button class="primary" onclick="run('divide')">a ÷ b</button>
+    </div>
+    <div class="result" id="result">
+      <span class="expr" id="expr">等待运算…</span>
+      <span class="val" id="val"></span>
+    </div>
+    <p class="note" id="note">把 b 改成 0 再点「a ÷ b」，会看到和 <code>calc.py</code> 完全一致的行为：抛 ValueError，而不是返回 Infinity。</p>
+  </div>
+
+  <div class="card">
+    <h2>这个页面复刻了 calc.py 的契约</h2>
+    <table>
+      <thead>
+        <tr><th>函数</th><th>承诺的行为</th><th>对应测试</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>add(a, b)</code></td>
+          <td>返回 a + b</td>
+          <td>test_add_positive / test_add_negative</td>
+        </tr>
+        <tr>
+          <td><code>subtract(a, b)</code></td>
+          <td>返回 a − b，可为负</td>
+          <td>test_subtract_positive / test_subtract_to_negative</td>
+        </tr>
+        <tr>
+          <td><code>divide(a, b)</code></td>
+          <td>b=0 时<b>抛 ValueError</b>，不是返回 Infinity</td>
+          <td>test_divide_normal / test_divide_by_zero_raises</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">最后那条就是 PR #1 最初踩坏的地方：删掉除零校验后，<code>divide(1, 0)</code> 从 ValueError 变成 ZeroDivisionError，老测试当场变红。</p>
+  </div>
+
+  <div class="card">
+    <h2>这个 PR 做了什么</h2>
+    <table>
+      <thead><tr><th>项目</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>新增文件</td><td><code>index.html</code>（单文件，无外部依赖）</td></tr>
+        <tr><td>改动范围</td><td>纯新增，不动任何 <code>.py</code> 与 CI 配置</td></tr>
+        <tr><td>预期 CI</td><td><span class="badge ok">7 条测试应全绿</span> 因为它没碰被测代码</td></tr>
+        <tr><td>合并方式</td><td>Squash and merge</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>git-lab · JackGH88/jackpr · 本地双击即可打开，不需要服务器</footer>
+
+</div>
+
+<script>
+  // 与 calc.py 保持一致的三条契约
+  function add(a, b) { return a + b; }
+
+  function subtract(a, b) { return a - b; }
+
+  function divide(a, b) {
+    // 契约：除数为 0 必须抛 ValueError，绝不返回 Infinity / NaN
+    if (b === 0) throw new Error("ValueError: 除数不能为 0");
+    return a / b;
+  }
+
+  const OPS = {
+    add:      { fn: add,      sym: "+", label: "add" },
+    subtract: { fn: subtract, sym: "−", label: "subtract" },
+    divide:   { fn: divide,   sym: "÷", label: "divide" }
+  };
+
+  const el = {
+    a: document.getElementById("a"),
+    b: document.getElementById("b"),
+    box: document.getElementById("result"),
+    expr: document.getElementById("expr"),
+    val: document.getElementById("val"),
+    note: document.getElementById("note")
+  };
+
+  document.getElementById("b").addEventListener("input", function () {
+    el.note.innerHTML = Number(el.b.value) === 0
+      ? '现在 b = 0。点「a ÷ b」会看到 <b style="color:#f85149">ValueError: 除数不能为 0</b> —— 这正是 <code>divide</code> 被测试保护的老约定。'
+      : '把 b 改成 0 再点「a ÷ b」，会看到和 <code>calc.py</code> 完全一致的行为：抛 ValueError，而不是返回 Infinity。';
+  });
+
+  function run(key) {
+    const a = Number(el.a.value);
+    const b = Number(el.b.value);
+    const op = OPS[key];
+
+    el.expr.textContent = `${a} ${op.sym} ${b} =`;
+    el.box.classList.remove("error");
+
+    try {
+      const r = op.fn(a, b);
+      el.val.textContent = r;
+    } catch (err) {
+      el.box.classList.add("error");
+      el.val.textContent = err.message;
+    }
+  }
+</script>
+</body>
+</html>
