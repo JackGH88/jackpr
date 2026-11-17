@@ -11,7 +11,5 @@ def add(a, b):
 
 
 def divide(a, b):
-    """除法。b 为 0 时抛 ValueError —— 这是一条被测试保护的"老约定"。"""
-    if b == 0:
-        raise ValueError("除数不能为 0")
+    """除法。顺手"优化"掉了除零校验 —— 这就是一次典型的老功能回归。"""
     return a / b
