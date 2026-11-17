@@ -1,0 +1,14 @@
+# 实验：这个 workflow 只在 PR 改到 calc.py 时才跑
+name: 只检查 calc.py
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'calc.py'
+
+jobs:
+  calc-path-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "只有改动涉及 calc.py 时我才会跑"

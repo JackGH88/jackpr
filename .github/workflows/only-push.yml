@@ -1,0 +1,12 @@
+# 实验：这个 workflow 只在 push 到 main 时跑，PR 上根本不会出现
+name: 只跑主干
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  push-only-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "只在 push 到 main 时执行，PR 上应该看不到我"
