@@ -21,6 +21,11 @@ class TestDivide(unittest.TestCase):
     def test_divide_normal(self):
         self.assertEqual(divide(10, 2), 5)
 
+    def test_divide_by_zero_message(self):
+        # 错误信息里要带上下文，线上排查才知道是谁除零
+        with self.assertRaisesRegex(ValueError, "除数不能为 0"):
+            divide(7, 0)
+
     def test_divide_by_zero_raises(self):
         # 老约定：除零必须抛 ValueError，不能返回 0 或 inf
         with self.assertRaises(ValueError):
