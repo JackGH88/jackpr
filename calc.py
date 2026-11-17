@@ -10,6 +10,11 @@ def add(a, b):
     return a + b
 
 
+def subtract(a, b):
+    """减法。v1.1.0 新增的功能（在 feature/subtract 分支上做的）。"""
+    return a - b
+
+
 def divide(a, b):
     """除法。b 为 0 时抛 ValueError —— 这是一条被测试保护的"老约定"。"""
     if b == 0:
