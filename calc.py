@@ -20,3 +20,5 @@ def divide(a, b):
     if b == 0:
         raise ValueError(f"除数不能为 0（a={a}）")
     return a / b
+
+# 实验：触碰 calc.py 以唤醒 paths 过滤的 workflow
